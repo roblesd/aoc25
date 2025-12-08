@@ -1,9 +1,8 @@
-package main
+package day1
 
 import (
 	"bufio"
 	"fmt"
-	"os"
 	"strconv"
 )
 
@@ -11,7 +10,7 @@ func posMod(a, n int) int {
 	return (a%n + n) % n
 }
 
-func part1(scanner *bufio.Scanner) int {
+func Part1(scanner *bufio.Scanner) string {
 	curPos := 50
 	total := 0
 
@@ -34,10 +33,10 @@ func part1(scanner *bufio.Scanner) int {
 			total++
 		}
 	}
-	return total
+	return fmt.Sprintf("The password is %d", total)
 }
 
-func part2(scanner *bufio.Scanner) int {
+func Part2(scanner *bufio.Scanner) string {
 	curPos := 50
 	total := 0
 
@@ -69,17 +68,5 @@ func part2(scanner *bufio.Scanner) int {
 			curPos = (curPos + move) % 100
 		}
 	}
-	return total
-}
-
-func main() {
-	file, err := os.Open("./inputs/d1i1.txt")
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	pass := part2(scanner)
-	fmt.Printf("Password is: %d\n", pass)
+	return fmt.Sprintf("The password is %d", total)
 }
