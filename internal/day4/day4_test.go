@@ -19,6 +19,6 @@ func TestPart2(t *testing.T) {
 	out := Part2(strings.NewReader(input))
 	answer := 43
 	if out != answer {
-		t.Fatalf("Part1(%q) = %d; want %d", input, out, answer)
+		t.Fatalf("Part2(%q) = %d; want %d", input, out, answer)
 	}
 }
