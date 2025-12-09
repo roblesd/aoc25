@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
 	"os"
@@ -29,14 +28,13 @@ func main() {
 		panic(err)
 	}
 	defer file.Close()
-	scanner := bufio.NewScanner(file)
 
 	// Run the specified part
 	switch *part {
 	case 1:
-		fmt.Println(solver.Part1(scanner))
+		solver.Part1(file)
 	case 2:
-		fmt.Println(solver.Part2(scanner))
+		solver.Part2(file)
 	default:
 		fmt.Println("Invalid part selected")
 		return

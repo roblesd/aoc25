@@ -1,15 +1,15 @@
 package days
 
 import (
-	"bufio"
+	"io"
 
 	"github.com/roblesd/aoc25/internal/day1"
 	"github.com/roblesd/aoc25/internal/day2"
 )
 
 type Solver struct {
-	Part1 func(*bufio.Scanner) string
-	Part2 func(*bufio.Scanner) string
+	Part1 func(io.Reader) int
+	Part2 func(io.Reader) int
 }
 
 var Registry = map[int]Solver{
