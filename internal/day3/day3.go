@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"math"
 )
 
 func Part1(r io.Reader) int {
@@ -38,5 +39,30 @@ func Part1(r io.Reader) int {
 }
 
 func Part2(r io.Reader) int {
-	return 0
+	scanner := bufio.NewScanner(r)
+	totalJoltage := 0
+	for scanner.Scan() {
+		line := scanner.Text()
+		start := 0
+		joltage := 0
+		k := 12
+		for i := 0; i < k; i++ {
+			// up until where to look for the current digit
+			end := len(line) - (k - i)
+			maxDigit := 0
+			maxIndex := start
+			for j := start; j <= end; j++ {
+				curDigit := int(line[j] - '0')
+				if curDigit > maxDigit {
+					maxDigit = curDigit
+					maxIndex = j
+				}
+			}
+			joltage += maxDigit * int(math.Pow(10.0, float64(k-i-1)))
+			start = maxIndex + 1
+		}
+		totalJoltage += joltage
+	}
+	fmt.Printf("Day 3 Part 2; Total Joltage: %d\n", totalJoltage)
+	return totalJoltage
 }
