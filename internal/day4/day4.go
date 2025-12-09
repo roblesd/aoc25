@@ -6,27 +6,33 @@ import (
 	"io"
 )
 
-func readLines(r io.Reader) ([]string, error) {
+func readLines(r io.Reader) [][]byte {
 	scanner := bufio.NewScanner(r)
-	lines := []string{}
+
+	var grid [][]byte
 
 	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+		line := scanner.Bytes()
+		// MUST copy, because scanner.Bytes() is reused
+		b := append([]byte(nil), line...)
+		grid = append(grid, b)
 	}
-
-	if err := scanner.Err(); err != nil {
-		return nil, err
-	}
-
-	return lines, nil
+	return grid
 }
 
-func Part1(r io.Reader) int {
-	grid, err := readLines(r)
-	if err != nil {
-		panic(err)
+func copyGrid(grid [][]byte) [][]byte {
+	newGrid := make([][]byte, len(grid))
+	for i := range grid {
+		// copy each row
+		newRow := make([]byte, len(grid[i]))
+		copy(newRow, grid[i])
+		newGrid[i] = newRow
 	}
+	return newGrid
+}
 
+func processGrid(grid [][]byte) ([][]byte, int) {
+	markedGrid := copyGrid(grid)
 	rows, cols := len(grid), len(grid[0])
 	accessibleRolls := 0
 	for i := 0; i < rows; i++ {
@@ -67,15 +73,31 @@ func Part1(r io.Reader) int {
 					adjacentRolls++
 				}
 				if adjacentRolls < 4 {
+					markedGrid[i][j] = 'X'
 					accessibleRolls++
 				}
 			}
 		}
 	}
+	return markedGrid, accessibleRolls
+}
+
+func Part1(r io.Reader) int {
+	grid := readLines(r)
+	_, accessibleRolls := processGrid(grid)
 	fmt.Printf("Day 4 Part 1; Accessible Rolls: %d\n", accessibleRolls)
 	return accessibleRolls
 }
 
 func Part2(r io.Reader) int {
-	return 0
+	grid := readLines(r)
+	newGrid, accessibleRolls := processGrid(grid)
+	total := accessibleRolls
+
+	for accessibleRolls > 0 {
+		newGrid, accessibleRolls = processGrid(newGrid)
+		total += accessibleRolls
+	}
+	fmt.Printf("Day 4 Part 2; Accessible Rolls: %d\n", total)
+	return total
 }
