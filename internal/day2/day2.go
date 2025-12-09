@@ -18,12 +18,33 @@ func repeats(num int) bool {
 		return s[:n/2] == s[n/2:]
 	}
 
-	// For odd length numbers; nvm
-	// for i := 0; i < n; i++ {
-	// 	if s[i] != s[0] {
-	// 		return false
-	// 	}
-	// }
+	return false
+}
+
+func repeatsMultiple(num int) bool {
+	s := strconv.Itoa(num)
+	n := len(s)
+	if num < 10 {
+		return false
+	}
+
+	// Check each substring to see if it repeats
+	// can skip over substrings that dont divide the string length evenly
+	// only need to go halfway because after that repeating isn't possible
+	for i := 1; i <= n/2; i++ {
+		if n%(i) != 0 {
+			continue
+		}
+		curSubstring := s[:i]
+		for j := i; j <= n; j += i {
+			if j == n {
+				return true
+			}
+			if s[j:j+i] != curSubstring {
+				break
+			}
+		}
+	}
 	return false
 }
 
@@ -47,20 +68,39 @@ func Part1(r io.Reader) int {
 		}
 
 		for i := lower; i <= upper; i++ {
-			// fmt.Printf("Checking %d...", i)
 			if repeats(i) {
-				// fmt.Print("repeater!")
 				total += i
 			}
-			// fmt.Println()
 		}
-
 	}
 	fmt.Printf("Invalid Product ID's add up to %d\n", total)
 	return total
 }
 
 func Part2(r io.Reader) int {
-	// scanner := bufio.NewScanner(r)
-	return 0
+	scanner := bufio.NewScanner(r)
+	scanner.Scan()
+	ranges := strings.Split(scanner.Text(), ",")
+
+	total := 0
+	for _, str := range ranges {
+		nums := strings.Split(str, "-")
+		lower, err := strconv.Atoi(nums[0])
+		if err != nil {
+			panic(err)
+		}
+
+		upper, err := strconv.Atoi(nums[1])
+		if err != nil {
+			panic(err)
+		}
+
+		for i := lower; i <= upper; i++ {
+			if repeatsMultiple(i) {
+				total += i
+			}
+		}
+	}
+	fmt.Printf("Invalid Product ID's add up to %d\n", total)
+	return total
 }
