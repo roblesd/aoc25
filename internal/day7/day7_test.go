@@ -39,14 +39,14 @@ func TestPart2(t *testing.T) {
 		{
 			"Basic",
 			strings.NewReader(".......S.......\n...............\n.......^.......\n...............\n......^.^......\n...............\n.....^.^.^.....\n...............\n....^.^...^....\n...............\n...^.^...^.^...\n...............\n..^...^.....^..\n...............\n.^.^.^.^.^...^.\n...............\n"),
-			0,
+			40,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := Part2(tt.r)
 			// TODO: update the condition below to compare got with tt.want.
-			if true {
+			if got != tt.want {
 				t.Errorf("Part2() = %v, want %v", got, tt.want)
 			}
 		})

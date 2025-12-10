@@ -6,13 +6,18 @@ import (
 	"io"
 )
 
-func Part1(r io.Reader) int {
+func parseDiagram(r io.Reader) []string {
 	var diagram []string
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
 		line := scanner.Text()
 		diagram = append(diagram, line)
 	}
+	return diagram
+}
+
+func Part1(r io.Reader) int {
+	diagram := parseDiagram(r)
 	rows, cols := len(diagram), len(diagram[0])
 
 	// set up a slice to track where beams are
@@ -43,20 +48,33 @@ func Part1(r io.Reader) int {
 			}
 			copy(beams, temp)
 		}
-		// fmt.Printf("%d: ", i)
-		// fmt.Print(temp)
-		// fmt.Println()
-
 	}
-	// for _, beam := range beams {
-	// 	if beam == 1 {
-	// 		total++
-	// 	}
-	// }
 	fmt.Printf("Day 7 Part 1; Beam Split %d times\n", total)
 	return total
 }
 
 func Part2(r io.Reader) int {
-	return 0
+	diagram := parseDiagram(r)
+
+	beams := make([]int, len(diagram[0]))
+
+	for _, line := range diagram {
+		for j, c := range line {
+			switch c {
+			case 'S':
+				beams[j] = 1
+			case '^':
+				beams[j-1] += beams[j]
+				beams[j+1] += beams[j]
+				beams[j] = 0
+			case '.':
+			}
+		}
+	}
+	timelines := 0
+	for _, amt := range beams {
+		timelines += amt
+	}
+	fmt.Printf("Day 7 Part 2; Timelines: %d\n", timelines)
+	return timelines
 }
