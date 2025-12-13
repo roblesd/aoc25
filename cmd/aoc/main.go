@@ -12,8 +12,10 @@ func main() {
 	// Set up flags
 	day := flag.Int("day", 1, "Which day to run")
 	part := flag.Int("part", 1, "Part 1 or 2")
-	input := flag.String("input", "./inputs/day1.txt", "Input file")
 	flag.Parse()
+	input := fmt.Sprintf("./inputs/day%d.txt", *day)
+
+	fmt.Printf("Running Day %d, part %d using input %q\n", *day, *part, input)
 
 	// Grab the solver for the day specified
 	solver, ok := days.Registry[*day]
@@ -23,7 +25,7 @@ func main() {
 	}
 
 	// Read in the input file
-	file, err := os.Open(*input)
+	file, err := os.Open(input)
 	if err != nil {
 		panic(err)
 	}
