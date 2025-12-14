@@ -40,6 +40,42 @@ func Part1(r io.Reader) int {
 	return paths
 }
 
+type State struct {
+	node string
+	a    bool
+	b    bool
+}
+
 func Part2(r io.Reader) int {
-	return 0
+	graph := parseInput(r)
+
+	var search func(string, bool, bool, map[State]int) int
+	search = func(s string, dac, fft bool, cache map[State]int) int {
+		//check cache first
+		key := State{s, dac, fft}
+		if v, ok := cache[key]; ok {
+			return v
+		}
+
+		//base case
+		if s == "out" {
+			if dac && fft {
+				return 1
+			} else {
+				return 0
+			}
+		}
+
+		//check all outputs from current device
+		total := 0
+		for _, device := range graph[s] {
+			total += search(device, dac || (device == "dac"), fft || (device == "fft"), cache)
+		}
+		cache[key] = total
+		return total
+	}
+	cache := make(map[State]int)
+	paths := search("svr", false, false, cache)
+	fmt.Printf("Day 11 Part 2; Paths found: %d\n", paths)
+	return paths
 }
