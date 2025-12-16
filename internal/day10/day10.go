@@ -111,6 +111,124 @@ func Part1(r io.Reader) int {
 	return total
 }
 
+func lightPatterns(buttons []int) map[int][]int {
+	patterns := make(map[int][]int)
+	// 1. find all 2^n subsets of buttons
+	n := len(buttons)
+	total := 1 << n
+	for mask := 0; mask < total; mask++ {
+		lights := 0
+		for i := 0; i < n; i++ {
+			if mask&(1<<i) != 0 {
+				// buttons[i] is ON in this combination
+				lights ^= buttons[i]
+			}
+		}
+		patterns[lights] = append(patterns[lights], mask)
+	}
+	// patterns maps light patterns (as bits) to button combos that produce it
+	return patterns
+}
+
+func findParity(joltages []int) int {
+	// return bit representation of which lights are on
+	lights := 0
+	for i, joltage := range joltages {
+		if joltage%2 == 1 {
+			lights |= 1 << i
+		}
+	}
+	return lights
+}
+
+func allZero(nums []int) bool {
+	for _, n := range nums {
+		if n != 0 {
+			return false
+		}
+	}
+	return true
+}
+
+func encode(target []int) string {
+	var b strings.Builder
+	b.Grow(len(target) * 3) // rough guess
+	for _, v := range target {
+		b.WriteString(strconv.Itoa(v))
+		b.WriteByte(',')
+	}
+	return b.String()
+}
+
+func configureJoltages(buttons []int, joltages []int, patterns map[int][]int) int {
+	cache := make(map[string]int)
+	numButtons := len(buttons)
+	var minPresses func(target []int) int
+	minPresses = func(target []int) int {
+		key := encode(target)
+		// lookup
+		if v, ok := cache[key]; ok {
+			return v
+		}
+		// base case, no presses needed at 0'd out joltage target
+		if allZero(target) {
+			cache[key] = 0
+			return 0
+		}
+		lights := findParity(target)
+		newTarget := make([]int, len(target))
+		answer := 1000000 //"infinity"
+		for _, buttonMask := range patterns[lights] {
+			copy(newTarget, target)
+			presses := 0
+			for i := 0; i < numButtons; i++ {
+				// determine which buttons are 'on'
+				// update the target joltage
+				if buttonMask&(1<<i) != 0 {
+					presses++
+					//need to index into buttons
+					joltageMask := buttons[i]
+					for j := 0; joltageMask > 0; j++ {
+						if joltageMask&1 == 1 {
+							// bit j is ON
+							newTarget[j]--
+						}
+						joltageMask >>= 1
+					}
+				}
+			}
+			// check that joltages are non-negative
+			valid := true
+			for _, n := range newTarget {
+				if n < 0 {
+					valid = false
+				}
+			}
+			if !valid {
+				continue
+			}
+
+			// Now, all target joltages should be even, so we can split
+			halfTarget := make([]int, len(target))
+			for i, joltage := range newTarget {
+				halfTarget[i] = joltage / 2
+			}
+			answer = min(answer, presses+2*minPresses(halfTarget))
+		}
+		cache[key] = answer
+		return answer
+	}
+	return minPresses(joltages)
+}
+
 func Part2(r io.Reader) int {
-	return 0
+	machines := parseInput(r)
+	total := 0
+	for _, m := range machines {
+		patterns := lightPatterns(m.buttons)
+		ans := configureJoltages(m.buttons, m.joltage, patterns)
+		total += ans
+	}
+	fmt.Printf("Day 10 Part 2; Joltage configured in %d presses\n", total)
+	return total
 }
