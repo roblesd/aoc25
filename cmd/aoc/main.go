@@ -4,11 +4,13 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/roblesd/aoc25/internal/days"
 )
 
 func main() {
+	start := time.Now()
 	// Set up flags
 	day := flag.Int("day", 1, "Which day to run")
 	part := flag.Int("part", 1, "Part 1 or 2")
@@ -41,4 +43,6 @@ func main() {
 		fmt.Println("Invalid part selected")
 		return
 	}
+	elapsed := time.Since(start)
+	fmt.Printf("Execution time: %f seconds\n", elapsed.Seconds())
 }
